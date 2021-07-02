@@ -1,5 +1,6 @@
 package com.example.examplemod;
 
+import com.example.examplemod.commands.RegisterCommandEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraftforge.common.MinecraftForge;
@@ -19,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.Collectors;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod("examplemod")
+@Mod("minecraftdockermanager")
 public class ExampleMod
 {
     // Directly reference a log4j logger.
@@ -37,6 +38,9 @@ public class ExampleMod
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+        MinecraftForge.EVENT_BUS.register(RegisterCommandEvent.class);
+
     }
 
     private void setup(final FMLCommonSetupEvent event)
@@ -70,6 +74,7 @@ public class ExampleMod
         // do something when the server starts
         LOGGER.info("HELLO from server starting");
     }
+
 
     // You can use EventBusSubscriber to automatically subscribe events on the contained class (this is subscribing to the MOD
     // Event bus for receiving Registry Events)
