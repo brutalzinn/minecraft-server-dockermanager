@@ -31,8 +31,10 @@ def threaded_client(connection):
                 for item in enumerate(dataReceived):
                     if item[0] > 1:
                         commandList = f'{commandList} {item[1].rstrip()}'
-                print(commandList[1:])
-                dockerClient.containers.run(image,command=commandList[1:],detach=True)
+                print(f'|{commandList[1:]}|')
+               # dockerClient.containers.run(image,command=commandList[1:],detach=True)
+                dockerClient.containers.run(image,command='-e EULA=TRUE -p 25565:25565 -e MEMORY=2G',detach=True)
+
             else:
                 dockerClient.containers.run(image)
         if command == 'remove':
