@@ -1,18 +1,62 @@
-import subprocess
 import socket
-HOST = '0.0.0.0'
-PORT = 5000
-sSocket = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-sSocket.bind((HOST,PORT))
-sSocket.listen()
-print("Aguardando conexão com o mod.")
-conn, ender = sSocket.accept()
-print("Conectando em", ender)
+import os
+import sys
+import docker
+import importlib
+
+from _thread import *
+
+dockerClient = docker.from_env()
+ServerSocket = socket.socket()
+serverFolder = '/home/robertocpaes/minecraft-server'
+host = '0.0.0.0'
+port = 5000
+ThreadCount = 0
+try:
+    ServerSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    ServerSocket.bind((host, port))
+except socket.error as e:
+    print(str(e))
+
+print('Esperando conexão do mod..')
+ServerSocket.listen(5)
+
+
+def threaded_client(connection):
+    connection.send(str.encode('1'))
+    while True:
+        data = connection.recv(1024).decode()
+        dataReceived = data.split(' ')
+        command = dataReceived[0].rstrip()
+        serverName = dataReceived[1].rstrip()
+        if command == 'create':
+            port = dataReceived[2].rstrip()
+            directoryName = os.path.join(serverFolder, serverName)
+            os.mkdir(directoryName)
+            dockerModule = importlib.import_module("dockerManager")
+            ds = getattr(dockerModule, "createContainer")
+            response = ds(directoryName,serverName,int(port))
+            connection.sendall(str.encode(response))
+        if command == 'remove':
+            directoryName = os.path.join(serverFolder, serverName)
+            dockerModule = importlib.import_module("dockerManager")
+            ds = getattr(dockerModule, "removeContainer")
+            ds(serverName)
+            for root, dirs, files in os.walk(directoryName, topdown=False):
+                for name in files:
+                     os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            os.rmdir(directoryName)
+        if not data:
+            break
+       # connection.sendall(str.encode(reply))
+    connection.close()
+
 while True:
-    data = conn.recv(1024)
-    if not data:
-        print("Fechando a conexão")
-        conn.close()
-        break
-    s = subprocess.getstatusoutput(data.decode())
-    conn.sendall(str(s).encode())
+    Client, address = ServerSocket.accept()
+    print('Connected to: ' + address[0] + ':' + str(address[1]))
+    start_new_thread(threaded_client, (Client, ))
+    ThreadCount += 1
+    print('Thread Number: ' + str(ThreadCount))
+#ServerSocket.close()
