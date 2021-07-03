@@ -28,16 +28,24 @@ def threaded_client(connection):
         data = connection.recv(1024).decode()
         dataReceived = data.split(' ')
         command = dataReceived[0].rstrip()
-        serverName = dataReceived[1].rstrip()
         if command == 'create':
             port = dataReceived[2].rstrip()
+            serverName = dataReceived[1].rstrip()
             directoryName = os.path.join(serverFolder, serverName)
             os.mkdir(directoryName)
             dockerModule = importlib.import_module("dockerManager")
             ds = getattr(dockerModule, "createContainer")
             response = ds(directoryName,serverName,int(port))
             connection.sendall(str.encode(response))
+        if command == 'list':
+            dockerModule = importlib.import_module("dockerManager")
+            ds = getattr(dockerModule, "listContainer")
+            list = []
+            for item in ds():
+                list.append(f'{item.name} {item.status}')
+        connection.sendall(str.encode(list))
         if command == 'remove':
+            serverName = dataReceived[1].rstrip()
             directoryName = os.path.join(serverFolder, serverName)
             dockerModule = importlib.import_module("dockerManager")
             ds = getattr(dockerModule, "removeContainer")
