@@ -61,6 +61,17 @@ def threaded_client(connection,address):
                     response = {'status':True,'data':f'{serverName} restarted successful'}
                 else:
                     response = {'status':False,'data':f'{serverName} restarted with error. Check server container manager'}
+            elif command == 'addmod':
+                #addmod #servername #url
+                serverName = dataReceived[1].rstrip()
+                if len(dataReceived) > 2:
+                    url = dataReceived[2].rstrip()
+                    dockerModule = importlib.import_module("modsManager")
+                    download = getattr(dockerModule, "downloadFileExtract")
+                    directoryName = os.path.join(serverFolder, serverName)
+                    download(directoryName,url)
+                else:
+                    response = {'status':False,'data':f'{serverName} You need inform a url.'}
             elif command == 'stop':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
