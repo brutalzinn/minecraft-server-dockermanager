@@ -45,7 +45,7 @@ def threaded_client(connection):
             ds = getattr(dockerModule, "listContainer")
             list = []
             for item in ds():
-                list.append({'name':item.name,'status':item.status})
+                list.append({'name':item.name,'status':item.status,'port':item.Ports})
             result = {'data':list}
             connection.sendall(f'{result} \r\n'.encode())
         if command == 'restart':
