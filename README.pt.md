@@ -32,7 +32,7 @@ com command / docker criar bananaServer 25565
 # Configuração
 
 1. Você precisa puxar a imagem itzg / minecraft-server para o docker.
-> docker pull itzg / minecraft-server
+> docker pull itzg/minecraft-server
 
 Gerando configurações de inicialização / execução do IDE:
 
