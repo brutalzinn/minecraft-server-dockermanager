@@ -3,10 +3,13 @@ import docker
 dockerClient = docker.from_env()
 environment={"EULA":"TRUE","TYPE":"FORGE","VERSION":"1.16.5","FORGEVERSION":"36.1.32","ONLINE_MODE":"FALSE"}
 def createContainer(path,servername,port):
-    container = dockerClient.containers.run(image="itzg/minecraft-server", name=servername,ports={'25565/tcp': port},
-    environment=environment,volumes={path:{'bind':'/data','mode': 'rw'}},
-    detach=True)
-    return f'{container.short_id} Container created successful'
+    try:
+        dockerClient.containers.run(image="itzg/minecraft-server", name=servername,ports={'25565/tcp': port},
+        environment=environment,volumes={path:{'bind':'/data','mode': 'rw'}},
+        detach=True)
+        return True
+    except:
+        return False
 def removeContainer(servername):
     try:
         dockerClient.api.stop(servername)
