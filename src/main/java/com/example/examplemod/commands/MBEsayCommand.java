@@ -10,10 +10,7 @@ import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.MessageArgument;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.Util;
-import net.minecraft.util.text.ChatType;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.util.text.*;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,11 +35,38 @@ public class MBEsayCommand {
     /**
      * Read the command's "message" argument, convert it to pig latin, then send as a chat message
      */
+    static boolean isJSONValid(String test) {
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            // edited, to include @Arthur's comment
+            // e.g. in case JSONArray is valid as well...
+            try {
+                new JSONArray(test);
+            } catch (JSONException ex1) {
+                return false;
+            }
+        }
+        return true;
+    }
+    static String colorChangeType(String status){
+        switch (status){
+
+            case "running":
+            case "restarting":
+                return TextFormatting.GREEN + status;
+
+            case "exited":
+            case "paused":
+            case "removing":
+            case "dead":
+                return TextFormatting.RED + status;
+            default:
+                return status;
+        }
+    }
     static int sendPigLatinMessage(CommandContext<CommandSource> commandContext) throws CommandSyntaxException {
         ITextComponent messageValue = MessageArgument.getMessage(commandContext, "comando");
-
-
-
 
         Entity entity = commandContext.getSource().getEntity();
 
@@ -55,9 +79,27 @@ public class MBEsayCommand {
 
                     client.startConnection("0.0.0.0", 5000);
                     String response = client.sendMessage(messageValue.getString());
+                    if(isJSONValid(response)){
+                        StringBuilder json=new StringBuilder(response);
+                        JSONObject obj=null;
+                        try{
+                            obj=new JSONObject(json.toString());
+                            System.out.println(obj.toString());
+                            JSONArray jArray = obj.getJSONArray("data");
+                            entity.sendMessage(new StringTextComponent(TextFormatting.AQUA + "Name"+ " " + TextFormatting.AQUA + "Status"),entity.getUUID());
+
+                            for(int i = 0; i < jArray.length(); i++){
+                                JSONObject o = jArray.getJSONObject(i);
+                                entity.sendMessage(new StringTextComponent(TextFormatting.AQUA + o.getString("name") + " " + colorChangeType(o.getString("status"))),entity.getUUID());
+                                System.out.println(o.getString("name"));
+                            }
+                        }catch(JSONException e){
+                            e.printStackTrace();
+                        }
+                    }
                     System.out.print("Python response " + response);
 //                JSONParser parser = new JSONParser();
-//
+
 //                try {
 //                    Object obj = parser.parse(response);
 //                    JSONArray array = (JSONArray) obj;
