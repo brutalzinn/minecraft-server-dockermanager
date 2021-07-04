@@ -14,7 +14,9 @@ import net.minecraft.util.text.ChatType;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -47,12 +49,26 @@ public class MBEsayCommand {
             try{
                 client.startConnection("0.0.0.0", 5000);
                 String response = client.sendMessage(messageValue.getString());
+//                JSONParser parser = new JSONParser();
+//
+//                try {
+//                    Object obj = parser.parse(response);
+//                    JSONArray array = (JSONArray) obj;
+//                    System.out.println("The 2nd element of array");
+//                    System.out.println(array.get(0));
+//                    System.out.println();
+//
+//                } catch (ParseException pe) {
+//                    System.out.println("position: " + pe.getPosition());
+//                    System.out.println(pe);
+//                }
+                System.out.println("Python response" + response);
             } catch (IOException e) {
-
                 try {
+                    System.out.println(e.getMessage());
                     client.stopConnection();
                 } catch (IOException ioException) {
-                    ioException.printStackTrace();
+                    System.out.println(ioException.getMessage());
                 }
             }
 

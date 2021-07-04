@@ -1,4 +1,4 @@
-import socket
+import socket, pickle
 import os
 import sys
 import docker
@@ -36,14 +36,17 @@ def threaded_client(connection):
             dockerModule = importlib.import_module("dockerManager")
             ds = getattr(dockerModule, "createContainer")
             response = ds(directoryName,serverName,int(port))
-            connection.sendall(str.encode(response))
+            connection.send(str.encode(response))
+        if command == 'test':
+            connection.send('Esse é um teste de comunicação'.encode())
         if command == 'list':
             dockerModule = importlib.import_module("dockerManager")
             ds = getattr(dockerModule, "listContainer")
             list = []
             for item in ds():
-                list.append(f'{item.name} {item.status}')
-        connection.sendall(str.encode(list))
+                list.append({'name':item.name,'status':item.status})
+            result = {'data':list}
+            connection.send(str(result).encode())
         if command == 'remove':
             serverName = dataReceived[1].rstrip()
             directoryName = os.path.join(serverFolder, serverName)
@@ -67,4 +70,4 @@ while True:
     start_new_thread(threaded_client, (Client, ))
     ThreadCount += 1
     print('Thread Number: ' + str(ThreadCount))
-#ServerSocket.close()
+ServerSocket.close()
