@@ -1,3 +1,4 @@
+from logging import exception
 import socket, pickle
 import os
 import sys
@@ -29,19 +30,30 @@ def threaded_client(connection,address):
         dataReceived = data.split(' ')
         command = dataReceived[0].rstrip()
         response = {}
-        if len(dataReceived) > 1:
+        if command == 'test':
+            connection.sendall('Esse é um teste de comunicação \r\n'.encode())
+            print('teste recebido.')
+        elif command == 'list':
+            dockerModule = importlib.import_module("dockerManager")
+            list = getattr(dockerModule, "listContainer")
+            result = {'data':list()}
+            connection.sendall(f'{result}\r\n'.encode())
+        elif len(dataReceived) > 1:
             if command == 'create':
-                port = dataReceived[2].rstrip()
                 serverName = dataReceived[1].rstrip()
-                directoryName = os.path.join(serverFolder, serverName)
-                os.mkdir(directoryName)
-                dockerModule = importlib.import_module("dockerManager")
-                create = getattr(dockerModule, "createContainer")
-                if create(directoryName,serverName,int(port)):
-                    response = {'status':True,'data':f'{serverName} created successful'}
+                if len(dataReceived) > 2:
+                    port = dataReceived[2].rstrip()
+                    directoryName = os.path.join(serverFolder, serverName)
+                    os.mkdir(directoryName)
+                    dockerModule = importlib.import_module("dockerManager")
+                    create = getattr(dockerModule, "createContainer")
+                    if create(directoryName,serverName,int(port)):
+                        response = {'status':True,'data':f'{serverName} created successful'}
+                    else:
+                        response = {'status':False,'data':f'{serverName} create with error. Check server container manager'}
                 else:
-                    response = {'status':False,'data':f'{serverName} create with error. Check server container manager'}
-            if command == 'restart':
+                        response = {'status':False,'data':f'{serverName} You need inform a port.'}
+            elif command == 'restart':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
                 restart = getattr(dockerModule, "restartContainer")
@@ -49,7 +61,7 @@ def threaded_client(connection,address):
                     response = {'status':True,'data':f'{serverName} restarted successful'}
                 else:
                     response = {'status':False,'data':f'{serverName} restarted with error. Check server container manager'}
-            if command == 'stop':
+            elif command == 'stop':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
                 stop = getattr(dockerModule, "stopContainer")
@@ -57,7 +69,7 @@ def threaded_client(connection,address):
                    response = {'status':True,'data':f'{serverName} successfully stopped'}
                 else:
                    response = {'status':False,'data':f'{serverName} stopped with error. Check server container manager'}
-            if command == 'start':
+            elif command == 'start':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
                 start = getattr(dockerModule, "startContainer")
@@ -65,34 +77,29 @@ def threaded_client(connection,address):
                     response = {'status':True,'data':f'{serverName} successfully started'}
                 else:
                     response = {'status':False,'data':f'{serverName} started with error. Check server container manager'}
-            if command == 'remove':
+            elif command == 'remove':
                 serverName = dataReceived[1].rstrip()
                 directoryName = os.path.join(serverFolder, serverName)
                 dockerModule = importlib.import_module("dockerManager")
                 remove = getattr(dockerModule, "removeContainer")
-                if remove(serverName):
-                    response = {'status':True,'data':f'{serverName} successfully remove'}
-                else:
-                    response = {'status':True,'data':f'{serverName} removed with error. Check server container manager'}
-                    return False
-                for root, dirs, files in os.walk(directoryName, topdown=False):
-                    for name in files:
-                        os.remove(os.path.join(root, name))
-                    for name in dirs:
-                        os.rmdir(os.path.join(root, name))
-                os.rmdir(directoryName)
+                try:
+                    if remove(serverName):
+                        response = {'status':True,'data':f'{serverName} successfully remove'}
+                    else:
+                        response = {'status':False,'data':f'{serverName} removed with error. Check server container manager'}
+                    for root, dirs, files in os.walk(directoryName, topdown=False):
+                        for name in files:
+                            os.remove(os.path.join(root, name))
+                        for name in dirs:
+                            os.rmdir(os.path.join(root, name))
+                    os.rmdir(directoryName)
+                except Exception as error:
+                    response = {'status':False,'data':f'{serverName} '+ str(error)}
+
             connection.sendall(f'{response}\r\n'.encode())
         else:
             error = {'status':False,'data':'cant execute this command'}
             connection.sendall(f'{error}\r\n'.encode())
-        if command == 'test':
-            connection.sendall('Esse é um teste de comunicação \r\n'.encode())
-            print('teste recebido.')
-        if command == 'list':
-            dockerModule = importlib.import_module("dockerManager")
-            list = getattr(dockerModule, "listContainer")
-            result = {'data':list()}
-            connection.sendall(f'{result}\r\n'.encode())
         if not data:
             print("Desconectado. " + address[0])
             break
