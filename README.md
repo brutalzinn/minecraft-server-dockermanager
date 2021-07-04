@@ -4,7 +4,7 @@
 
 This is my vacation project to play minecraft server JAVA EDITION with my friends without fights.
 This project needs [Minecraft server docker image](https://github.com/itzg/docker-minecraft-server)
-# what it is?
+# What it is?
 
 It's a minecraft mod that can handle docker containers. We are using docker api with python. You can read about docker api here: [Access docker api documentation](https://docs.docker.com/engine/api/sdk/)
 
