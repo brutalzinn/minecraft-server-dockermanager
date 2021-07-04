@@ -33,6 +33,15 @@ def stopContainer(servername):
     except:
         return False
 def listContainer():
-    return dockerClient.containers.list(all=True,filters={"ancestor":["itzg/minecraft-server"]})
+    list = []
+    containerList =  dockerClient.containers.list(all=True,filters={"ancestor":["itzg/minecraft-server"]})
+    for item in containerList:
+        containerInfo = dockerClient.containers.get(item.id)
+        ports = containerInfo.attrs['HostConfig']['PortBindings'].items()
+        finalPort = 0
+        for key, value in ports:
+            finalPort = value[0]['HostPort']
+        list.append({'name':item.name,'status':item.status,'port':f"{finalPort}"})
+    return list
 
 
