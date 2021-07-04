@@ -47,7 +47,7 @@ def threaded_client(connection):
             for item in ds():
                 list.append({'name':item.name,'status':item.status})
             result = {'data':list}
-            connection.sendall(str(result + '\r\n').encode())
+            connection.sendall(f'{result} \r\n'.encode())
         if command == 'remove':
             serverName = dataReceived[1].rstrip()
             directoryName = os.path.join(serverFolder, serverName)
