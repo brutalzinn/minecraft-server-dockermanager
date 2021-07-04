@@ -1,11 +1,46 @@
-# Multilanguage README Pattern
+# minecraft-server-dockermanager
+
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/brutalzinn/minecraft-server-dockermanager/blob/master/README.md)
 
-Este é o meu projeto de férias para jogar minecraft com meus amigos sem brigas.
+Este é o meu projeto de férias para jogar minecraft server JAVA EDITION com meus amigos sem brigas.
+Este projeto precisa de [imagem docker do servidor do Minecraft] (https://github.com/itzg/docker-minecraft-server)
+# O que é isso?
 
-Como funciona?
+É um mod minecraft que pode lidar com contêineres docker. Estamos usando docker api com python. Você pode ler sobre a docker api aqui: [Acesse a documentação da docker api] (https://docs.docker.com/engine/api/sdk/)
 
-Para que a comunicação do servidor minecraft java edition com o sistema operacional funcione, precisamos de algum ponto entre os dois. Então, usamos um servidor de soquete em python para enviar comandos para a interface de comando do sistema operacional. E no minecraft, criamos uma conexão entre o jogador conectado, e o servidor de socket do python. O administrador do jogo usará o comando / docker <args de comando> para executar os comandos do docker.
-Mas, esse é um problema de segurança crítico. Neste momento, você pode escrever "/docker shutdown" e o servidor será encerrado. Precisamos higienizar os comandos e barrar qualquer comando que não seja do docker.
+# Mod para um jogador ou multijogador?
 
-Este projeto está em construção. Não use isso na produção. 
+Neste momento, é apenas um mod para um jogador. Mas este mod precisa ser executado apenas no lado do servidor.
+
+Este projeto foi iniciado em 2 de julho de 2021. E não está pronto para ser usado sem o modo dev.
+
+# Como funciona?
+
+Estamos usando Python para nos comunicarmos com a docker api e para iniciar um servidor de soquete de múltiplos clientes. O mod minecraft envia mensagens de soquete para o servidor Python.
+Com essas operações, podemos gerenciar os contêineres docker. Você pode criar um servidor de minecraft 1.16.5 forge modificado chamado bananaServer na porta 25565
+com command / docker criar bananaServer 25565
+
+# Requisitos:
+
+1. Python 3.x
+2. Java SDK 8.x (não pode ser versões Java mais recentes)
+3. Uma interface de desenvolvimento (Eclipse, IntelliJ IDEA. Recomendo esses dois porque você pode encontrar tutoriais interessantes para começar a desenvolver mods para minecraft facilmente)
+4. Leia sobre a API do forge (isso pode ajudá-lo na configuração) [Acessar a documentação da API do forge] (https://mcforge.readthedocs.io/en/latest/gettingstarted/#building-and-testing-your-mod)
+5. Um cliente minecraft com forge-1.16.5-36.1.32 instalado
+6. Docker instalado
+
+# Configuração de configuração
+
+1. Você precisa puxar a imagem itzg / minecraft-server para o docker.
+> docker pull itzg / minecraft-server
+
+Gerando configurações de inicialização / execução do IDE:
+
+Você pode encontrar a configuração completa aqui: [Access forge Getting started] (https://mcforge.readthedocs.io/en/latest/gettingstarted/#building-and-testing-your-mod)
+
+Para Eclipse, execute a tarefa gradle genEclipseRuns (gradlew genEclipseRuns). Isso gerará as configurações de inicialização e fará o download de todos os ativos necessários para que o jogo seja executado. Depois de terminar, atualize seu projeto.
+
+Para IntelliJ, execute a tarefa gradle genIntellijRuns (gradlew genIntellijRuns). Isso gerará as configurações de execução e fará o download de todos os recursos necessários para que o jogo seja executado. Se você encontrar um erro dizendo “módulo não especificado”, você pode editar a configuração para selecionar seu módulo “principal” ou especificá-lo através da propriedade ideaModule.
+
+
+O que preciso fazer para executar isso?
