@@ -8,12 +8,31 @@ def createContainer(path,servername,port):
     detach=True)
     return f'{container.short_id} Container created successful'
 def removeContainer(servername):
-    dockerClient.api.stop(servername)
-    dockerClient.api.remove_container(servername)
+    try:
+        dockerClient.api.stop(servername)
+        dockerClient.api.remove_container(servername)
+        return True
+    except:
+        return False
 def restartContainer(servername):
-    dockerClient.api.restart(servername)
-    dockerClient.api.restart(servername)
+    try:
+        dockerClient.api.restart(servername)
+        return True
+    except:
+        return False
+def startContainer(servername):
+    try:
+        dockerClient.api.start(servername)
+        return True
+    except:
+        return False
+def stopContainer(servername):
+    try:
+        dockerClient.api.stop(servername)
+        return True
+    except:
+        return False
 def listContainer():
-    return dockerClient.containers.list()
+    return dockerClient.containers.list(all=True,filters={"ancestor":["itzg/minecraft-server"]})
 
 
