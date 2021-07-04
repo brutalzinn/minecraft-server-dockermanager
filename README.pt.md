@@ -29,7 +29,7 @@ com command / docker criar bananaServer 25565
 5. Um cliente minecraft com forge-1.16.5-36.1.32 instalado
 6. Docker instalado
 
-# Configuração de configuração
+# Configuração
 
 1. Você precisa puxar a imagem itzg / minecraft-server para o docker.
 > docker pull itzg / minecraft-server
