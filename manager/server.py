@@ -23,7 +23,7 @@ ServerSocket.listen(5)
 
 
 def threaded_client(connection):
-    connection.send(str.encode('1'))
+   # connection.send(str.encode('1'))
     while True:
         data = connection.recv(1024).decode()
         dataReceived = data.split(' ')
@@ -36,9 +36,10 @@ def threaded_client(connection):
             dockerModule = importlib.import_module("dockerManager")
             ds = getattr(dockerModule, "createContainer")
             response = ds(directoryName,serverName,int(port))
-            connection.send(str.encode(response))
+            connection.sendall(str.encode(response))
         if command == 'test':
-            connection.send('Esse é um teste de comunicação'.encode())
+            connection.sendall('Esse é um teste de comunicação \r\n'.encode())
+            print('teste recebido.')
         if command == 'list':
             dockerModule = importlib.import_module("dockerManager")
             ds = getattr(dockerModule, "listContainer")
@@ -46,7 +47,7 @@ def threaded_client(connection):
             for item in ds():
                 list.append({'name':item.name,'status':item.status})
             result = {'data':list}
-            connection.send(str(result).encode())
+            connection.sendall(str(result + '\r\n').encode())
         if command == 'remove':
             serverName = dataReceived[1].rstrip()
             directoryName = os.path.join(serverFolder, serverName)

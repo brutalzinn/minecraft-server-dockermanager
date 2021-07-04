@@ -22,6 +22,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MBEsayCommand {
+    private static socketClient client = new socketClient();
+
     public static void register(CommandDispatcher<CommandSource> dispatcher) {
         LiteralArgumentBuilder<CommandSource> mbesayCommand
                 = Commands.literal("docker")
@@ -43,12 +45,17 @@ public class MBEsayCommand {
 
 
         Entity entity = commandContext.getSource().getEntity();
-        socketClient client = new socketClient();
 
         if (entity != null) {
-            try{
-                client.startConnection("0.0.0.0", 5000);
-                String response = client.sendMessage(messageValue.getString());
+            new Thread(() -> {
+
+                try{
+
+                    System.out.print("Enviando  ao python" + messageValue.getString());
+
+                    client.startConnection("0.0.0.0", 5000);
+                    String response = client.sendMessage(messageValue.getString());
+                    System.out.print("Python response " + response);
 //                JSONParser parser = new JSONParser();
 //
 //                try {
@@ -62,17 +69,28 @@ public class MBEsayCommand {
 //                    System.out.println("position: " + pe.getPosition());
 //                    System.out.println(pe);
 //                }
-                System.out.println("Python response" + response);
-            } catch (IOException e) {
-                try {
-                    System.out.println(e.getMessage());
-                    client.stopConnection();
-                } catch (IOException ioException) {
-                    System.out.println(ioException.getMessage());
-                }
-            }
+                } catch (IOException errore) {
+                    System.out.print("ERRO:"+errore);
+                    try {
+                        client.stopConnection();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
 
-            System.out.print("Comando recebido. Se comunicando com o servidor de sockets.. enviando " + messageValue.getString() );
+//                        try {
+//                            System.out.println(e.getMessage());
+//                           // client.stopConnection();
+//                        } catch (IOException ioException) {
+//                            System.out.println(ioException.getMessage());
+//                        }
+                }
+
+
+
+            }).start();
+
+
+//            System.out.print("Comando recebido. Se comunicando com o servidor de sockets.. enviando " + messageValue.getString() );
            // commandContext.getSource().getServer().getPlayerList().func_232641_a_(finalText, ChatType.CHAT, entity.getUniqueID());
             //func_232641_a_ is sendMessage()
         } else {
