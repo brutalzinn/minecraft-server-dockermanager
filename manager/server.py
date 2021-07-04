@@ -22,7 +22,7 @@ print('Esperando conexão do mod..')
 ServerSocket.listen(5)
 
 
-def threaded_client(connection):
+def threaded_client(connection,address):
    # connection.send(str.encode('1'))
     while True:
         data = connection.recv(1024).decode()
@@ -94,14 +94,14 @@ def threaded_client(connection):
             result = {'data':list()}
             connection.sendall(f'{result}\r\n'.encode())
         if not data:
+            print("Desconectado. " + address[0])
             break
        # connection.sendall(str.encode(reply))
     connection.close()
-
 while True:
     Client, address = ServerSocket.accept()
     print('Connected to: ' + address[0] + ':' + str(address[1]))
-    start_new_thread(threaded_client, (Client, ))
-    ThreadCount += 1
-    print('Thread Number: ' + str(ThreadCount))
+    start_new_thread(threaded_client, (Client,address))
+    #ThreadCount += 1
+    #print('Thread Number: ' + str(ThreadCount))
 ServerSocket.close()
