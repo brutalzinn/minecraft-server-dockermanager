@@ -42,5 +42,9 @@ Para Eclipse, execute a tarefa gradle genEclipseRuns (gradlew genEclipseRuns). I
 
 Para IntelliJ, execute a tarefa gradle genIntellijRuns (gradlew genIntellijRuns). Isso gerará as configurações de execução e fará o download de todos os recursos necessários para que o jogo seja executado. Se você encontrar um erro dizendo “módulo não especificado”, você pode editar a configuração para selecionar seu módulo “principal” ou especificá-lo através da propriedade ideaModule.
 
+# In game
 
-O que preciso fazer para executar isso?
+![Print 1](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print1.png)
+### Digitando /docker list para mostrar todos os servidores criados
+![Print 2](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print2.png)
+### Criando um servidor do minecraft forge 36.1.32 para o minecraft 1.16.5
