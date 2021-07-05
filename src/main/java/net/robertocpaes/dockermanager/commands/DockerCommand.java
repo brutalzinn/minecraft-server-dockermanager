@@ -93,7 +93,7 @@ public class DockerCommand extends Command {
                 try{
                     socketClient client = socketClient.getInstance();
 
-                    client.startConnection("0.0.0.0", 5000);
+                    client.startConnection("192.168.0.17", 5000);
                     String response = client.sendMessage(commandSender);
                     if(isJSONArray(response)){
                         System.out.print("This is a data array from python ");
@@ -124,13 +124,13 @@ public class DockerCommand extends Command {
 
                 } catch (IOException errore) {
                     System.out.print("ERRO:"+errore);
-//                    try {
-//                        socketClient client = socketClient.getInstance();
-//
-//                    //    client.stopConnection();
-//                    } catch (IOException ioException) {
-//                        ioException.printStackTrace();
-//                    }
+                    try {
+                        socketClient client = socketClient.getInstance();
+
+                        client.stopConnection();
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                    }
 
                 }
 

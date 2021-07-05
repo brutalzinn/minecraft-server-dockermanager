@@ -16,15 +16,10 @@
 #         break
 #     s = subprocess.getstatusoutput(data.decode())
 #     conn.sendall(str(s).encode())
-object = {
-  "25565/tcp": [
-    {
-      "HostIp": "",
-      "HostPort": "5555"
-    }
-  ]
-}.items()
-
-for key, value in object:
-
-    print(value[0]['HostPort'])
+import socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.bind(("0.0.0.0", 5000))
+s.listen(2)
+conn, addr = s.accept()
+print("accepted")
+print(bytes.decode(conn.recv(1024)))
