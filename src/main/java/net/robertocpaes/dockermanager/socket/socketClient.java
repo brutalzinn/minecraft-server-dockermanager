@@ -12,20 +12,27 @@ public class socketClient {
     private BufferedReader in;
 
     public void startConnection(String ip, int port) throws IOException {
-        clientSocket = new Socket(ip, port);
-        out = new PrintWriter(clientSocket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+        this.clientSocket = new Socket(ip, port);
+        this.out = new PrintWriter(clientSocket.getOutputStream(), true);
+        this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
     }
+    private socketClient() {
 
+    }
+    private static socketClient instance = new socketClient();
+    public static socketClient getInstance() {
+        return instance;
+    }
     public String sendMessage(String msg) throws IOException {
-        out.println(msg);
-        String resp = in.readLine();
+
+        this.out.println(msg);
+        String resp = this.in.readLine();
         return resp;
     }
 
     public void stopConnection() throws IOException {
-        in.close();
-        out.close();
-        clientSocket.close();
+        this.in.close();
+        this.out.close();
+        this.clientSocket.close();
     }
 }

@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class DockerCommand extends Command {
-    private static socketClient client = new socketClient();
 
     private DockerManager plugin;
 
@@ -79,15 +78,23 @@ public class DockerCommand extends Command {
             ProxiedPlayer player = (ProxiedPlayer) sender;
             plugin.config.reload();
             StringBuffer command = new StringBuffer();
-            if (args.length > 0) {
+            if (args.length == 0 ) {
+                player.sendMessage(new TextComponent(ChatColor.RED + "É obrigatório enviar um param."));
+                return;
+            }
                 for(int i = 0; i < args.length; i++) {
                     command.append(args[i]);
                 }
-            }
+
+            String commandSender = command.toString();
+            plugin.getLogger().info("Command to send " + commandSender);
+
             new Thread(() -> {
                 try{
+                    socketClient client = socketClient.getInstance();
+
                     client.startConnection("0.0.0.0", 5000);
-                    String response = client.sendMessage(command.toString());
+                    String response = client.sendMessage(commandSender);
                     if(isJSONArray(response)){
                         System.out.print("This is a data array from python ");
                         JsonParser parser = new JsonParser();
@@ -117,22 +124,18 @@ public class DockerCommand extends Command {
 
                 } catch (IOException errore) {
                     System.out.print("ERRO:"+errore);
-                    try {
-                        client.stopConnection();
-                    } catch (IOException ioException) {
-                        ioException.printStackTrace();
-                    }
+//                    try {
+//                        socketClient client = socketClient.getInstance();
+//
+//                    //    client.stopConnection();
+//                    } catch (IOException ioException) {
+//                        ioException.printStackTrace();
+//                    }
 
                 }
 
             }).start();
-           //String lobbyServer = plugin.config.get().getString("lobby server");
-         //   ServerInfo lobby = plugin.getProxy().getServerInfo(lobbyServer);
-//            if (!player.getServer().getInfo().equals(lobby)){
-//                player.sendMessage(new TextComponent(ChatColor.GREEN + "Teleporting to lobby..."));
-//              //  player.connect(lobby);
-//            }else{
-                player.sendMessage(new TextComponent(ChatColor.RED + "You are already in the lobby."));
+          //      player.sendMessage(new TextComponent(ChatColor.RED + "You are already in the lobby."));
 
         }
     }
