@@ -7,6 +7,7 @@ dockerClient = docker.from_env()
 def create_container(path, servername, port,environment):
     try:
         dockerClient.containers.run(image="itzg/minecraft-server:java8", name=servername, ports={'25565/tcp': port},
+                                    network='bungee',
                                      environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
                                     detach=True)
         return True
@@ -17,14 +18,17 @@ def setup_docker():
     dockerClient.images.pull("itzg/minecraft-server")
 def setup_bungee(serverdirectory):
     try:
+        dockerClient.networks.create("bungee")
         dockerClient.images.pull("itzg/bungeecord")
         environment = {"TYPE":"WATERFALL"}
         dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25577/tcp': 25577},
+        network='bungee',
         environment=environment,
         volumes={serverdirectory: {'bind': '/server', 'mode': 'rw'}},
         detach=True)
         return True
-    except:
+    except Exception as err:
+        print(err)
         return False
 def remove_bungee():
     try:

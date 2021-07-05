@@ -1,25 +1,39 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
+ Eclipse stuff
 .classpath
 .project
+.settings/
 
-# idea
-out
+# netbeans
+nbproject/
+nbactions.xml
+
+# we use maven!
+build.xml
+
+# maven
+target/
+dependency-reduced-pom.xml
+
+# vim
+.*.sw[a-p]
+
+# various other potential build files
+build/
+bin/
+dist/
+manifest.mf
+
+# Mac filesystem dust
+.DS_Store
+
+# intellij
+*.iml
 *.ipr
 *.iws
-*.iml
-.idea
+.idea/
 
-# gradle
-build
-.gradle
+# other files
+*.log*
 
-# other
-eclipse
-run
-
-# Files from Forge MDK
-forge*changelog.txt
+# delombok
+*/src/main/lombok

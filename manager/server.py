@@ -57,7 +57,7 @@ def threaded_client(connection,address):
             connection.sendall('Esse é um teste de comunicação \r\n'.encode())
             print('teste recebido.')
         #need test here
-        elif command == 'setup-bungee':
+        elif command == 'create-bungee':
             dockerModule = importlib.import_module("dockerManager")
             bungee = getattr(dockerModule, "setup_bungee")
             if bungee(serverFolder):
