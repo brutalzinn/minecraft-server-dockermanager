@@ -23,17 +23,20 @@ try:
     if not os.path.exists(configFile):
         with open(configFile, 'w') as fp:
             data = {}
-            data['run'] = 1
+            data['run'] = 0
             yaml.dump(data, fp)
+    with open(configFile) as fp:
+        data = yaml.load(fp)
+        if data['run'] == 0:
+            dockerModule = importlib.import_module("dockerManager")
+            setup = getattr(dockerModule, "setup_docker")
+            setup()
     with open(configFile) as fp:
         data = yaml.load(fp)
     if data['run'] == 0:
         data['run'] = 1
     with open(configFile, 'w') as fp:
         yaml.dump(data, fp)
-    dockerModule = importlib.import_module("dockerManager")
-    setup = getattr(dockerModule, "setup_docker")
-    setup()
     ServerSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     ServerSocket.bind((host, port))
 
