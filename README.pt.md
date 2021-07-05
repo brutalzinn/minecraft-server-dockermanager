@@ -44,7 +44,7 @@ Para IntelliJ, execute a tarefa gradle genIntellijRuns (gradlew genIntellijRuns)
 
 # In game
 
-![Print 1](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print1.png)
 ### Digitando /docker list para mostrar todos os servidores criados
-![Print 2](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print2.png)
+![Print 1](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print1.png)
 ### Criando um servidor do minecraft forge 36.1.32 para o minecraft 1.16.5
+![Print 2](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print2.png)
