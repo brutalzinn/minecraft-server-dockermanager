@@ -1,5 +1,7 @@
 package net.robertocpaes.dockermanager.commands;
 
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -7,13 +9,14 @@ import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
 import net.robertocpaes.dockermanager.DockerManager;
+import net.robertocpaes.dockermanager.schema.listSchema;
 import net.robertocpaes.dockermanager.socket.socketClient;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DockerCommand extends Command {
     private static socketClient client = new socketClient();
@@ -24,31 +27,24 @@ public class DockerCommand extends Command {
         super("docker", "", "doc", "d");
         plugin = pl;
     }
+
     static boolean isJSONValid(String test) {
         try {
-            new JSONObject(test);
-        } catch (JSONException ex) {
-            // edited, to include @Arthur's comment
-            // e.g. in case JSONArray is valid as well...
-            try {
-                new JSONArray(test);
-            } catch (JSONException ex1) {
-                return false;
-            }
+            new Gson().fromJson(test, Object.class);
+            return true;
+        } catch (com.google.gson.JsonSyntaxException ex) {
+            return false;
         }
-        return true;
     }
     static boolean isJSONArray(String test) {
-
-        StringBuilder json=new StringBuilder(test);
-
         try {
-            JSONObject obj =new JSONObject(json.toString());
-            JSONArray jArray = obj.getJSONArray("data");
-            if(jArray.length() == 0){
-                throw new Error("Its not json array");
+            JsonParser parser = new JsonParser();
+            JsonObject obj = parser.parse(test).getAsJsonObject();
+            JsonArray testSuites = obj.getAsJsonArray("data");
+            if (testSuites.size() > 0){
+                return true;
             }
-        } catch (JSONException ex1) {
+        } catch (com.google.gson.JsonSyntaxException ex1) {
             return false;
         }
 
@@ -94,29 +90,24 @@ public class DockerCommand extends Command {
                     String response = client.sendMessage(command.toString());
                     if(isJSONArray(response)){
                         System.out.print("This is a data array from python ");
-                        StringBuilder json=new StringBuilder(response);
-                        JSONObject obj=null;
+                        JsonParser parser = new JsonParser();
+                        JsonObject obj = parser.parse(response).getAsJsonObject();
+                        JsonArray jArray = obj.getAsJsonArray("data");
                         try{
-                            obj=new JSONObject(json.toString());
-                            System.out.println(obj.toString());
-                            JSONArray jArray = obj.getJSONArray("data");
                             player.sendMessage(new TextComponent(ChatColor.AQUA + "Name"+ " " + ChatColor.AQUA + "Status"+ " " + ChatColor.AQUA + "Port"));
-                            for(int i = 0; i < jArray.length(); i++){
-                                JSONObject o = jArray.getJSONObject(i);
-                                player.sendMessage(new TextComponent(ChatColor.AQUA + o.getString("name") + " " + colorChangeTypeStatus(o.getString("status")) + " " + ChatColor.GOLD + o.getString("port")));
-                                System.out.println(o.getString("name"));
+                            List<listSchema> jsonObjList = new Gson().fromJson(jArray, new TypeToken<List<listSchema>>() {}.getType());
+                            for(listSchema respObject : jsonObjList) {
+                                player.sendMessage(new TextComponent(ChatColor.AQUA + respObject.name+ " " + colorChangeTypeStatus(respObject.status) + " " + ChatColor.GOLD + respObject.port));
                             }
-                        }catch(JSONException e){
+                        }catch(com.google.gson.JsonSyntaxException e){
                             e.printStackTrace();
                         }
                     }else{
-                        StringBuilder json=new StringBuilder(response);
-                        JSONObject obj=null;
-
+                        JsonParser parser = new JsonParser();
+                        JsonObject obj =  parser.parse(response).getAsJsonObject();
                         try{
-                            obj=new JSONObject(json.toString());
-                            player.sendMessage(new TextComponent(colorChangeMessageStatus(obj.getBoolean("status"),obj.getString("data"))));
-                        }catch (JSONException e){
+                            player.sendMessage(new TextComponent(colorChangeMessageStatus(obj.getAsJsonObject("status").getAsBoolean(),obj.getAsJsonObject("data").getAsString())));
+                        }catch (com.google.gson.JsonSyntaxException e){
                             e.printStackTrace();
 
                         }
