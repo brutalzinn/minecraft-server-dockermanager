@@ -48,7 +48,6 @@ ServerSocket.listen(5)
 
 
 def threaded_client(connection,address):
-   # connection.send(str.encode('1'))
     while True:
         data = connection.recv(1024).decode()
         dataReceived = data.split(' ')
@@ -57,13 +56,24 @@ def threaded_client(connection,address):
         if command == 'test':
             connection.sendall('Esse é um teste de comunicação \r\n'.encode())
             print('teste recebido.')
+        #need test here
         elif command == 'setup-bungee':
             dockerModule = importlib.import_module("dockerManager")
             bungee = getattr(dockerModule, "setup_bungee")
             if bungee(serverFolder):
-                response = {'status':True,'data':f'{serverName} created and installed successful'}
+                response = {'status':True,'data':f'BungeeCord created and installed successful'}
             else:
-                response = {'status':False,'data':f'{serverName} Trow  with error. Check server container manager'}
+                response = {'status':False,'data':f'BungeeCord Trow  with error. Check server container manager'}
+            connection.sendall(f'{response}\r\n'.encode())
+        elif command == 'remove-bungee':
+            dockerModule = importlib.import_module("dockerManager")
+            bungee = getattr(dockerModule, "remove_bungee")
+            if bungee():
+                response = {'status':True,'data':f'BungeeCord removed successful'}
+            else:
+                response = {'status':False,'data':f'BungeeCord Trow  with error. Check server container manager'}
+            connection.sendall(f'{response}\r\n'.encode())
+        #-----------
         elif command == 'list':
             dockerModule = importlib.import_module("dockerManager")
             list = getattr(dockerModule, "list_container")
@@ -108,7 +118,6 @@ def threaded_client(connection,address):
                 else:
                     response = {'status':False,'data':f'{serverName} restarted with error. Check server container manager'}
             elif command == 'addmod':
-                #addmod #servername #url
                 serverName = dataReceived[1].rstrip()
                 if len(dataReceived) > 2:
                     url = dataReceived[2].rstrip()
@@ -186,12 +195,9 @@ def threaded_client(connection,address):
         if not data:
             print("Desconectado. " + address[0])
             break
-       # connection.sendall(str.encode(reply))
     connection.close()
 while True:
     Client, address = ServerSocket.accept()
     print('Connected to: ' + address[0] + ':' + str(address[1]))
     start_new_thread(threaded_client, (Client,address))
-    #ThreadCount += 1
-    #print('Thread Number: ' + str(ThreadCount))
 ServerSocket.close()

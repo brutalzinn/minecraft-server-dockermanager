@@ -6,8 +6,8 @@ dockerClient = docker.from_env()
 
 def create_container(path, servername, port,environment):
     try:
-        dockerClient.containers.run(image="itzg/minecraft-server", name=servername, ports={'25565/tcp': port},
-                                    environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
+        dockerClient.containers.run(image="itzg/minecraft-server:java8", name=servername, ports={'25565/tcp': port},
+                                     environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
                                     detach=True)
         return True
     except Exception as err:
@@ -15,11 +15,13 @@ def create_container(path, servername, port,environment):
         return False
 def setup_docker():
     dockerClient.images.pull("itzg/minecraft-server")
-    dockerClient.images.pull("itzg/bungeecord")
 def setup_bungee(serverdirectory):
     try:
-        dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25565/tcp': 25565},
-        volumes={serverdirectory: {'bind': '/data', 'mode': 'rw'}},
+        dockerClient.images.pull("itzg/bungeecord")
+        environment = {"TYPE":"WATERFALL"}
+        dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25577/tcp': 25577},
+        environment=environment,
+        volumes={serverdirectory: {'bind': '/server', 'mode': 'rw'}},
         detach=True)
         return True
     except:
@@ -28,6 +30,8 @@ def remove_bungee():
     try:
         dockerClient.api.stop('bungeecord')
         dockerClient.api.remove_container('bungeecord')
+        dockerClient.images.remove("itzg/bungeecord")
+        dockerClient
         return True
     except:
         return False
@@ -66,7 +70,7 @@ def stop_container(servername):
 
 def list_container():
     list = []
-    containerList = dockerClient.containers.list(all=True, filters={"ancestor": ["itzg/minecraft-server"]})
+    containerList = dockerClient.containers.list(all=True, filters={"ancestor": ["itzg/minecraft-server:java8"]})
     for item in containerList:
         containerInfo = dockerClient.containers.get(item.id)
         ports = containerInfo.attrs['HostConfig']['PortBindings'].items()
