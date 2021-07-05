@@ -19,6 +19,7 @@ dependency-reduced-pom.xml
 
 # various other potential build files
 build/
+*.attach_pid*
 bin/
 dist/
 manifest.mf
@@ -34,6 +35,7 @@ manifest.mf
 
 # other files
 *.log*
+
 
 # delombok
 */src/main/lombok

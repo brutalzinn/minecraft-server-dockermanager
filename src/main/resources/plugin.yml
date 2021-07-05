@@ -1,0 +1,5 @@
+name: DockerCommand
+version: ${project.version}
+main: net.robertocpaes.dockermanager.DockerManager
+description: A Docker plugin
+author: robertocpaes.dev
