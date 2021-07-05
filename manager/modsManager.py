@@ -37,14 +37,20 @@ def clearMods(directoryfolder,mods):
         modFolder = os.path.join(directoryfolder, "mods")
         print(modFolder)
         print(mods)
+        modsTotal = len(mods)
+        print("before",modsTotal)
         for root, dirs, files in os.walk(modFolder, topdown=False):
             for name in files:
                 if name.lower() in mods:
                     os.remove(os.path.join(root, name))
+                    modsTotal = modsTotal - 1
             for name in dirs:
                 os.rmdir(os.path.join(root, name))
         #Path(modFolder).rmdir(parents=True, exist_ok=True)
-        return True
+        if modsTotal == 0:
+            return True
+        else:
+            return False
     except:
         return False
 #downloadFile("/home/robertocpaes/minecraft-server/teste","http://update.displaybuttons.com/testezip.zip")

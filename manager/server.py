@@ -92,7 +92,10 @@ def threaded_client(connection,address):
                     modsModule = importlib.import_module("modsManager")
                     clearMods = getattr(modsModule, "clearMods")
                     directoryName = os.path.join(serverFolder, serverName)
-                    clearMods(directoryName,modsList)
+                    if clearMods(directoryName,modsList):
+                        response = {'status':True,'data':f'{serverName} mods successfully deleted'}
+                    else:
+                        response = {'status':False,'data':f'{serverName} error deleting the mods.'}
                 else:
                     response = {'status':False,'data':f'{serverName} You need inform a mod list between spaces.'}
             elif command == 'stop':
