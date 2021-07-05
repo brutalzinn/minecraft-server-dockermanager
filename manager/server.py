@@ -66,12 +66,35 @@ def threaded_client(connection,address):
                 serverName = dataReceived[1].rstrip()
                 if len(dataReceived) > 2:
                     url = dataReceived[2].rstrip()
-                    dockerModule = importlib.import_module("modsManager")
-                    download = getattr(dockerModule, "downloadFileExtract")
+                    modsModule = importlib.import_module("modsManager")
+                    addMod = getattr(modsModule, "addMods")
                     directoryName = os.path.join(serverFolder, serverName)
-                    download(directoryName,url)
+                    addMod(directoryName,url)
                 else:
                     response = {'status':False,'data':f'{serverName} You need inform a url.'}
+            elif command == 'clearallmods':
+                serverName = dataReceived[1].rstrip()
+                modsModule = importlib.import_module("modsManager")
+                clearAllMods = getattr(modsModule, "clearAllMods")
+                directoryName = os.path.join(serverFolder, serverName)
+                clearAllMods(directoryName)
+            elif command == 'clearmod':
+                serverName = dataReceived[1].rstrip()
+                modsReceived = ''
+                modsList = []
+                if len(dataReceived) > 2:
+                    for idx, val in enumerate(dataReceived):
+                        if idx > 1:
+                            modsReceived = f'{modsReceived} {val.rstrip()}'
+                    modlist = modsReceived[1:].split(',')
+                    for  val in modlist:
+                        modsList.append(f'{val.rstrip()}.jar'.lower())
+                    modsModule = importlib.import_module("modsManager")
+                    clearMods = getattr(modsModule, "clearMods")
+                    directoryName = os.path.join(serverFolder, serverName)
+                    clearMods(directoryName,modsList)
+                else:
+                    response = {'status':False,'data':f'{serverName} You need inform a mod list between spaces.'}
             elif command == 'stop':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
