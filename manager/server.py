@@ -68,7 +68,7 @@ def threaded_client(connection,address):
                 if len(dataReceived) > 2:
                     url = dataReceived[2].rstrip()
                     modsModule = importlib.import_module("modsManager")
-                    addMod = getattr(modsModule, "addMods")
+                    addMod = getattr(modsModule, "add_mods")
                     directoryName = os.path.join(serverFolder, serverName)
                     addMod(directoryName,url)
                 else:
@@ -76,7 +76,7 @@ def threaded_client(connection,address):
             elif command == 'clearallmods':
                 serverName = dataReceived[1].rstrip()
                 modsModule = importlib.import_module("modsManager")
-                clearAllMods = getattr(modsModule, "clearAllMods")
+                clearAllMods = getattr(modsModule, "clear_all_mods")
                 directoryName = os.path.join(serverFolder, serverName)
                 clearAllMods(directoryName)
             elif command == 'clearmod':
@@ -91,7 +91,7 @@ def threaded_client(connection,address):
                     for  val in modlist:
                         modsList.append(f'{val.rstrip()}.jar'.lower())
                     modsModule = importlib.import_module("modsManager")
-                    clearMods = getattr(modsModule, "clearMods")
+                    clearMods = getattr(modsModule, "clear_mods")
                     directoryName = os.path.join(serverFolder, serverName)
                     if clearMods(directoryName,modsList):
                         response = {'status':True,'data':f'{serverName} mods successfully deleted'}

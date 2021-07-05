@@ -3,7 +3,7 @@ import os
 from urllib.request import urlopen
 from zipfile import ZipFile
 from pathlib import Path
-def downloadFileExtract(directoryfolder,zipurl):
+def download_file_extract(directoryfolder,zipurl):
     try:
         with urlopen(zipurl) as zipresp:
             with ZipFile(BytesIO(zipresp.read())) as zfile:
@@ -12,15 +12,15 @@ def downloadFileExtract(directoryfolder,zipurl):
     except:
         #return False
         raise Exception()
-def addMods(directoryfolder,url):
+def add_mods(directoryfolder,url):
     try:
         modFolder = os.path.join(directoryfolder, "mods")
         Path(modFolder).mkdir(parents=True, exist_ok=True)
-        downloadFileExtract(modFolder,url)
+        download_file_extract(modFolder,url)
         return True
     except:
         return False
-def clearAllMods(directoryfolder):
+def clear_all_mods(directoryfolder):
     try:
         modFolder = os.path.join(directoryfolder, "mods")
         for root, dirs, files in os.walk(directoryfolder, topdown=False):
@@ -32,7 +32,7 @@ def clearAllMods(directoryfolder):
         return True
     except:
         return False
-def clearMods(directoryfolder,mods):
+def clear_mods(directoryfolder,mods):
     try:
         modFolder = os.path.join(directoryfolder, "mods")
         print(modFolder)
