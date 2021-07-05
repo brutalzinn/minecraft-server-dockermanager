@@ -24,6 +24,13 @@ def setup_bungee(serverdirectory):
         return True
     except:
         return False
+def remove_bungee():
+    try:
+        dockerClient.api.stop('bungeecord')
+        dockerClient.api.remove_container('bungeecord')
+        return True
+    except:
+        return False
 def remove_container(servername):
     try:
         dockerClient.api.stop(servername)

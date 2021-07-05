@@ -57,6 +57,13 @@ def threaded_client(connection,address):
         if command == 'test':
             connection.sendall('Esse é um teste de comunicação \r\n'.encode())
             print('teste recebido.')
+        elif command == 'setup-bungee':
+            dockerModule = importlib.import_module("dockerManager")
+            bungee = getattr(dockerModule, "setup_bungee")
+            if bungee(serverFolder):
+                response = {'status':True,'data':f'{serverName} created and installed successful'}
+            else:
+                response = {'status':False,'data':f'{serverName} Trow  with error. Check server container manager'}
         elif command == 'list':
             dockerModule = importlib.import_module("dockerManager")
             list = getattr(dockerModule, "list_container")
