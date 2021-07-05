@@ -5,6 +5,8 @@ import sys
 import docker
 import importlib
 from pathlib import Path
+import ruamel.yaml
+import sys
 
 from _thread import *
 
@@ -14,9 +16,27 @@ serverFolder = '/home/robertocpaes/minecraft-server'
 host = '0.0.0.0'
 port = 5000
 ThreadCount = 0
+configFile = os.path.join(sys.path[0], "config.yml")
+
 try:
+    yaml = ruamel.yaml.YAML()
+    if not os.path.exists(configFile):
+        with open(configFile, 'w') as fp:
+            data = {}
+            data['run'] = 1
+            yaml.dump(data, fp)
+    with open(configFile) as fp:
+        data = yaml.load(fp)
+    if data['run'] == 0:
+        data['run'] = 1
+    with open(configFile, 'w') as fp:
+        yaml.dump(data, fp)
+    dockerModule = importlib.import_module("dockerManager")
+    setup = getattr(dockerModule, "setup_docker")
+    setup()
     ServerSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     ServerSocket.bind((host, port))
+
 except socket.error as e:
     print(str(e))
 

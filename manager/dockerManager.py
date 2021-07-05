@@ -13,8 +13,17 @@ def create_container(path, servername, port,environment):
     except Exception as err:
         print(err)
         return False
-
-
+def setup_docker():
+    dockerClient.images.pull("itzg/minecraft-server")
+    dockerClient.images.pull("itzg/bungeecord")
+def setup_bungee(serverdirectory):
+    try:
+        dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25565/tcp': 25565},
+        volumes={serverdirectory: {'bind': '/data', 'mode': 'rw'}},
+        detach=True)
+        return True
+    except:
+        return False
 def remove_container(servername):
     try:
         dockerClient.api.stop(servername)
