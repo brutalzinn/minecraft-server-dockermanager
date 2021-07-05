@@ -4,6 +4,7 @@ import os
 import sys
 import docker
 import importlib
+from pathlib import Path
 
 from _thread import *
 
@@ -35,7 +36,7 @@ def threaded_client(connection,address):
             print('teste recebido.')
         elif command == 'list':
             dockerModule = importlib.import_module("dockerManager")
-            list = getattr(dockerModule, "listContainer")
+            list = getattr(dockerModule, "list_container")
             result = {'data':list()}
             connection.sendall(f'{result}\r\n'.encode())
         elif len(dataReceived) > 1:
@@ -44,9 +45,9 @@ def threaded_client(connection,address):
                 if len(dataReceived) > 2:
                     port = dataReceived[2].rstrip()
                     directoryName = os.path.join(serverFolder, serverName)
-                    os.mkdir(directoryName)
+                    Path(directoryName).mkdir(parents=True, exist_ok=True)
                     dockerModule = importlib.import_module("dockerManager")
-                    create = getattr(dockerModule, "createContainer")
+                    create = getattr(dockerModule, "create_container")
                     if create(directoryName,serverName,int(port)):
                         response = {'status':True,'data':f'{serverName} created successful'}
                     else:
@@ -56,7 +57,7 @@ def threaded_client(connection,address):
             elif command == 'restart':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
-                restart = getattr(dockerModule, "restartContainer")
+                restart = getattr(dockerModule, "restart_container")
                 if restart(serverName):
                     response = {'status':True,'data':f'{serverName} restarted successful'}
                 else:
@@ -101,7 +102,7 @@ def threaded_client(connection,address):
             elif command == 'stop':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
-                stop = getattr(dockerModule, "stopContainer")
+                stop = getattr(dockerModule, "stop_container")
                 if stop(serverName):
                    response = {'status':True,'data':f'{serverName} successfully stopped'}
                 else:
@@ -109,7 +110,7 @@ def threaded_client(connection,address):
             elif command == 'start':
                 serverName = dataReceived[1].rstrip()
                 dockerModule = importlib.import_module("dockerManager")
-                start = getattr(dockerModule, "startContainer")
+                start = getattr(dockerModule, "start_container")
                 if start(serverName):
                     response = {'status':True,'data':f'{serverName} successfully started'}
                 else:
@@ -118,7 +119,7 @@ def threaded_client(connection,address):
                 serverName = dataReceived[1].rstrip()
                 directoryName = os.path.join(serverFolder, serverName)
                 dockerModule = importlib.import_module("dockerManager")
-                remove = getattr(dockerModule, "removeContainer")
+                remove = getattr(dockerModule, "remove_container")
                 try:
                     if remove(serverName):
                         response = {'status':True,'data':f'{serverName} successfully remove'}
