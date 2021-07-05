@@ -36,20 +36,37 @@ public class MBEsayCommand {
      * Read the command's "message" argument, convert it to pig latin, then send as a chat message
      */
     static boolean isJSONValid(String test) {
-//        try {
-//            new JSONObject(test);
-//        } catch (JSONException ex) {
-//            // edited, to include @Arthur's comment
-//            // e.g. in case JSONArray is valid as well...
+        try {
+            new JSONObject(test);
+        } catch (JSONException ex) {
+            // edited, to include @Arthur's comment
+            // e.g. in case JSONArray is valid as well...
             try {
                 new JSONArray(test);
             } catch (JSONException ex1) {
                 return false;
             }
-//        }
+        }
         return true;
     }
-    static String colorChangeType(String status){
+    static boolean isJSONArray(String test) {
+
+        StringBuilder json=new StringBuilder(test);
+
+        try {
+            JSONObject obj =new JSONObject(json.toString());
+            JSONArray jArray = obj.getJSONArray("data");
+            if(jArray.length() == 0){
+                throw new Error("Its not json array");
+            }
+        } catch (JSONException ex1) {
+                return false;
+            }
+
+        return true;
+    }
+
+    static String colorChangeTypeStatus(String status){
         switch (status){
 
             case "running":
@@ -65,6 +82,14 @@ public class MBEsayCommand {
                 return status;
         }
     }
+    static String colorChangeMessageStatus(Boolean status,String data){
+            if(status) {
+                return TextFormatting.GREEN + "Success:" + data;
+            }else{
+                return TextFormatting.RED + "Error:" + data;
+            }
+    }
+
     static int sendPigLatinMessage(CommandContext<CommandSource> commandContext) throws CommandSyntaxException {
         ITextComponent messageValue = MessageArgument.getMessage(commandContext, "comando");
 
@@ -79,7 +104,7 @@ public class MBEsayCommand {
 
                     client.startConnection("0.0.0.0", 5000);
                     String response = client.sendMessage(messageValue.getString());
-                    if(isJSONValid(response)){
+                    if(isJSONArray(response)){
                         System.out.print("This is a data array from python ");
                         StringBuilder json=new StringBuilder(response);
                         JSONObject obj=null;
@@ -87,16 +112,26 @@ public class MBEsayCommand {
                             obj=new JSONObject(json.toString());
                             System.out.println(obj.toString());
                             JSONArray jArray = obj.getJSONArray("data");
-                            entity.sendMessage(new StringTextComponent(TextFormatting.AQUA + "Name"+ " " + TextFormatting.AQUA + "Status"),entity.getUUID());
+                            entity.sendMessage(new StringTextComponent(TextFormatting.AQUA + "Name"+ " " + TextFormatting.AQUA + "Status"+ " " + TextFormatting.AQUA + "Port"),entity.getUUID());
                             for(int i = 0; i < jArray.length(); i++){
                                 JSONObject o = jArray.getJSONObject(i);
-                                entity.sendMessage(new StringTextComponent(TextFormatting.AQUA + o.getString("name") + " " + colorChangeType(o.getString("status")) + " " + TextFormatting.GOLD + o.getString("port")),entity.getUUID());
+                                entity.sendMessage(new StringTextComponent(TextFormatting.AQUA + o.getString("name") + " " + colorChangeTypeStatus(o.getString("status")) + " " + TextFormatting.GOLD + o.getString("port")),entity.getUUID());
                                 System.out.println(o.getString("name"));
                             }
                         }catch(JSONException e){
                             e.printStackTrace();
                         }
                     }else{
+                        StringBuilder json=new StringBuilder(response);
+                        JSONObject obj=null;
+
+                        try{
+                            obj=new JSONObject(json.toString());
+                            entity.sendMessage(new StringTextComponent(colorChangeMessageStatus(obj.getBoolean("status"),obj.getString("data"))),entity.getUUID());
+                        }catch (JSONException e){
+                            e.printStackTrace();
+
+                        }
                         System.out.print("A simple json object. " + response);
 
                     }
