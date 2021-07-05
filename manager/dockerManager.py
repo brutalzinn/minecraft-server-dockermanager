@@ -4,13 +4,14 @@ dockerClient = docker.from_env()
 environment = {"EULA": "TRUE", "TYPE": "FORGE", "VERSION": "1.16.5", "FORGEVERSION": "36.1.32", "ONLINE_MODE": "FALSE"}
 
 
-def create_container(path, servername, port):
+def create_container(path, servername, port,environment):
     try:
         dockerClient.containers.run(image="itzg/minecraft-server", name=servername, ports={'25565/tcp': port},
                                     environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
                                     detach=True)
         return True
-    except:
+    except Exception as err:
+        print(err)
         return False
 
 

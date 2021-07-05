@@ -42,13 +42,28 @@ def threaded_client(connection,address):
         elif len(dataReceived) > 1:
             if command == 'create':
                 serverName = dataReceived[1].rstrip()
+                version = ''
+                forgeversion = ''
+                type = ''
+                enviroment = {"EULA": "TRUE", "ONLINE_MODE": "FALSE"}
                 if len(dataReceived) > 2:
                     port = dataReceived[2].rstrip()
+                    if len(dataReceived) > 3:
+                        type = dataReceived[3].rstrip()
+                        enviroment['TYPE'] = type.upper()
+
+                    if len(dataReceived) > 4:
+                        version = dataReceived[4].rstrip()
+                        enviroment['VERSION'] = version
+                    if len(dataReceived) > 5:
+                        forgeversion = dataReceived[5].rstrip()
+                        enviroment['FORGEVERSION'] = forgeversion
+                    print(enviroment)
                     directoryName = os.path.join(serverFolder, serverName)
                     Path(directoryName).mkdir(parents=True, exist_ok=True)
                     dockerModule = importlib.import_module("dockerManager")
                     create = getattr(dockerModule, "create_container")
-                    if create(directoryName,serverName,int(port)):
+                    if create(directoryName,serverName,int(port),enviroment):
                         response = {'status':True,'data':f'{serverName} created successful'}
                     else:
                         response = {'status':False,'data':f'{serverName} create with error. Check server container manager'}
