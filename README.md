@@ -42,10 +42,13 @@ For Eclipse, run the genEclipseRuns gradle task (gradlew genEclipseRuns). This w
 
 For IntelliJ, run the genIntellijRuns gradle task (gradlew genIntellijRuns). This will generate the Run Configurations and download any required assets for the game to run. If you encounter an error saying “module not specified”, you can either edit the configuration to select your “main” module or specify it through the ideaModule property.
 
+# A fluxogram of minecraft docker manager plugin
+
+![Flow](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/images/docker_manager_flow.png)
 
 # In game
 
 ### Typing /docker list to show all servers
-![Print 1](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print1.png)
+![Print 1](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/images/print1.png)
 ### Creating a minecraft forge 36.1.32 server for minecraft 1.16.5
-![Print 2](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/print2.png)
+![Print 2](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/images/print2.png)

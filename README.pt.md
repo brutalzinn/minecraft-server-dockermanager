@@ -42,10 +42,9 @@ Para Eclipse, execute a tarefa gradle genEclipseRuns (gradlew genEclipseRuns). I
 
 Para IntelliJ, execute a tarefa gradle genIntellijRuns (gradlew genIntellijRuns). Isso gerará as configurações de execução e fará o download de todos os recursos necessários para que o jogo seja executado. Se você encontrar um erro dizendo “módulo não especificado”, você pode editar a configuração para selecionar seu módulo “principal” ou especificá-lo através da propriedade ideaModule.
 
-# A fluxogram of minecraft docker manager plugin
+# Fluxograma para o Bungeecord dockermanager plugin
 
 ![Flow](https://raw.githubusercontent.com/brutalzinn/minecraft-server-dockermanager/master/images/docker_manager_flow.png)
-
 
 # In game
 
