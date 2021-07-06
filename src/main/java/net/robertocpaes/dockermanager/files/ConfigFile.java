@@ -9,10 +9,10 @@ public class ConfigFile extends AbstractFile {
     }
 
     public void createConfig(){
-        String lobbyServer = config.getString("lobby server");
+        String lobbyServer = config.getString("ip");
 
         if (lobbyServer.equals("")){
-            config.set("lobby server", "lobby");
+            config.set("ip", "${CFG_HOST}");
             save();
         }
     }

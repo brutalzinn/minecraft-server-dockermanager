@@ -16,10 +16,8 @@
 #         break
 #     s = subprocess.getstatusoutput(data.decode())
 #     conn.sendall(str(s).encode())
-import socket
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.bind(("0.0.0.0", 5000))
-s.listen(2)
-conn, addr = s.accept()
-print("accepted")
-print(bytes.decode(conn.recv(1024)))
+import subprocess
+
+output = subprocess.run(["bash ./setup.sh"], shell=True,universal_newlines = True,
+                              stdout = subprocess.PIPE)
+print(output.stdout.strip())

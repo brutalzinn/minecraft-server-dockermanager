@@ -25,6 +25,7 @@ public class DockerCommand extends Command {
     public  DockerCommand(DockerManager pl) {
         super("docker", "", "doc", "d");
         plugin = pl;
+
     }
 
     static boolean isJSONValid(String test) {
@@ -77,8 +78,10 @@ public class DockerCommand extends Command {
         if (sender instanceof ProxiedPlayer){
             ProxiedPlayer player = (ProxiedPlayer) sender;
             plugin.config.reload();
+           // String ipAddress = plugin.config.get().getString("ip");
             StringBuffer command = new StringBuffer();
             if (args.length == 0 ) {
+                player.sendMessage(new TextComponent(ChatColor.GOLD + System.getenv("CFG_HOST")));
                 player.sendMessage(new TextComponent(ChatColor.RED + "É obrigatório enviar um param."));
                 return;
             }
@@ -93,7 +96,7 @@ public class DockerCommand extends Command {
                 try{
                     socketClient client = socketClient.getInstance();
 
-                    client.startConnection("192.168.0.17", 5000);
+                    client.startConnection(System.getenv("CFG_HOST"), 5000);
                     String response = client.sendMessage(commandSender);
                     if(isJSONArray(response)){
                         System.out.print("This is a data array from python ");

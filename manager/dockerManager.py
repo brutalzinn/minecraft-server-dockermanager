@@ -1,5 +1,6 @@
+from sys import flags
 import docker
-
+import subprocess
 dockerClient = docker.from_env()
 # environment = {"EULA": "TRUE", "TYPE": "FORGE", "VERSION": "1.16.5", "FORGEVERSION": "36.1.32", "ONLINE_MODE": "FALSE"}
 
@@ -18,9 +19,15 @@ def setup_docker():
     dockerClient.images.pull("itzg/minecraft-server")
 def setup_bungee(serverdirectory):
     try:
-        dockerClient.networks.create("bungee")
+         #       environment = {"TYPE":"WATERFALL","REPLACE_ENV_VARIABLES":"TRUE","ENV_VARIABLE_PREFIX":"CFG_","CFG_HOST":"$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')"},
+
+     #   dockerClient.networks.create("bungee")
         dockerClient.images.pull("itzg/bungeecord")
-        environment = {"TYPE":"WATERFALL"}
+        output = subprocess.run(["bash ./setup.sh"], shell=True,universal_newlines = True,
+        stdout = subprocess.PIPE)
+       # print(output.stdout.strip())
+        environment = {"TYPE":"WATERFALL","CFG_HOST":output.stdout.strip()}
+
         dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25577/tcp': 25577},
         network='bungee',
         environment=environment,
