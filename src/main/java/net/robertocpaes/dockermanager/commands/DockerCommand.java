@@ -86,9 +86,9 @@ public class DockerCommand extends Command {
                 return;
             }
                 for(int i = 0; i < args.length; i++) {
-                    command.append(args[i]);
+                    command.append(args[i] + " ");
                 }
-
+            command.deleteCharAt(command.length()-1);
             String commandSender = command.toString();
             plugin.getLogger().info("Command to send " + commandSender);
 
