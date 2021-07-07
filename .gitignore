@@ -39,3 +39,4 @@ manifest.mf
 
 # delombok
 */src/main/lombok
+/venv/
