@@ -15,9 +15,10 @@ def docker_command(serverFolder,dataReceived):
             version = ''
             forgeversion = ''
             type = ''
-            enviroment = {"EULA": "TRUE", "ONLINE_MODE": "FALSE"}
             if len(dataReceived) > 2:
                 port = dataReceived[2].rstrip()
+                enviroment = {"EULA": "TRUE", "ONLINE_MODE": "FALSE", "SERVER_PORT": port}
+
                 if len(dataReceived) > 3:
                     type = dataReceived[3].rstrip()
                     enviroment['TYPE'] = type.upper()

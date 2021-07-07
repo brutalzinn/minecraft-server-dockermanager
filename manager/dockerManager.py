@@ -7,7 +7,7 @@ dockerClient = docker.from_env()
 
 def create_container(path, servername, port,environment):
     try:
-        dockerClient.containers.run(image="itzg/minecraft-server:java8", name=servername, ports={'25565/tcp': port},
+        dockerClient.containers.run(image="itzg/minecraft-server:java11", name=servername, ports={f'{port}/tcp': port},
                                     network='bungee',
                                      environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
                                     detach=True)
@@ -26,7 +26,7 @@ def setup_bungee(serverdirectory):
         output = subprocess.run(["bash ./setup.sh"], shell=True,universal_newlines = True,
         stdout = subprocess.PIPE)
        # print(output.stdout.strip())
-        environment = {"TYPE":"WATERFALL","CFG_HOST":output.stdout.strip()}
+        environment = {"TYPE": "WATERFALL", "CFG_HOST": output.stdout.strip()}
 
         dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25577/tcp': 25577},
         network='bungee',
@@ -81,7 +81,7 @@ def stop_container(servername):
 
 def list_container():
     list = []
-    containerList = dockerClient.containers.list(all=True, filters={"ancestor": ["itzg/minecraft-server:java8"]})
+    containerList = dockerClient.containers.list(all=True, filters={"ancestor": ["itzg/minecraft-server:java11"]})
     for item in containerList:
         containerInfo = dockerClient.containers.get(item.id)
         ports = containerInfo.attrs['HostConfig']['PortBindings'].items()
