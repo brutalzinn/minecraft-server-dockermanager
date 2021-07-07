@@ -2,7 +2,7 @@ import ruamel.yaml
 import os
 from pathlib import Path
 
-def add_server_bungee(serverDirectory,servername,port,motd = 'Apenas um teste'):
+def add_server_bungee(serverDirectory, servername, port, motd = 'Apenas um teste'):
     yaml = ruamel.yaml.YAML()
     config_bungee = os.path.join(serverDirectory, "config.yml")
     print(serverDirectory, servername)
@@ -12,7 +12,7 @@ def add_server_bungee(serverDirectory,servername,port,motd = 'Apenas um teste'):
         print(data['servers'])
     with open(config_bungee, 'w') as fp:
         yaml.dump(data, fp)
-def remove_server_bungee(serverDirectory,servername):
+def remove_server_bungee(serverDirectory, servername):
     yaml = ruamel.yaml.YAML()
     config_bungee = os.path.join(serverDirectory, "config.yml")
     print(serverDirectory, servername)

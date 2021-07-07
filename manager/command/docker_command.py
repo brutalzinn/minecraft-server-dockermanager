@@ -74,15 +74,18 @@ def docker_command(serverFolder,dataReceived):
             remove = getattr(dockerModule, "remove_container")
             try:
                 if remove(serverName):
+                    for root, dirs, files in os.walk(directoryName, topdown=False):
+                        for name in files:
+                            os.remove(os.path.join(root, name))
+                        for name in dirs:
+                            os.rmdir(os.path.join(root, name))
+                    os.rmdir(directoryName)
+                    yml_editor_module = importlib.import_module("utils.yml_editor")
+                    yml_editor = getattr(yml_editor_module, "remove_server_bungee")
+                    yml_editor(serverFolder, serverName)
                     return {'status':True,'data':f'{serverName} successfully remove'}
                 else:
                     return {'status':False,'data':f'{serverName} removed with error. Check server container manager'}
-                for root, dirs, files in os.walk(directoryName, topdown=False):
-                    for name in files:
-                        os.remove(os.path.join(root, name))
-                    for name in dirs:
-                        os.rmdir(os.path.join(root, name))
-                os.rmdir(directoryName)
             except Exception as error:
                 return {'status':False,'data':f'{serverName} '+ str(error)}
     else:
