@@ -16,8 +16,9 @@
 #         break
 #     s = subprocess.getstatusoutput(data.decode())
 #     conn.sendall(str(s).encode())
-import subprocess
+import importlib
 
-output = subprocess.run(["bash ./setup.sh"], shell=True,universal_newlines = True,
-                              stdout = subprocess.PIPE)
-print(output.stdout.strip())
+serverFolder = '/home/robertocpaes/minecraft-server'
+yml_editor_module = importlib.import_module("utils.yml_editor")
+yml_editor = getattr(yml_editor_module, "add_server_bungee")
+yml_editor(serverFolder, 'teste',25566)

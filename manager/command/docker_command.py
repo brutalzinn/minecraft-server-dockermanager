@@ -34,6 +34,9 @@ def docker_command(serverFolder,dataReceived):
                 dockerModule = importlib.import_module("dockerManager")
                 create = getattr(dockerModule, "create_container")
                 if create(directoryName,serverName,int(port),enviroment):
+                    yml_editor_module = importlib.import_module("utils.yml_editor")
+                    yml_editor = getattr(yml_editor_module, "add_server_bungee")
+                    yml_editor(serverFolder, serverName, port)
                     return {'status':True,'data':f'{serverName} created successful'}
                 else:
                     return {'status':False,'data':f'{serverName} create with error. Check server container manager'}
