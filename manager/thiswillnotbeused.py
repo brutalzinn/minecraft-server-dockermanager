@@ -17,8 +17,21 @@
 #     s = subprocess.getstatusoutput(data.decode())
 #     conn.sendall(str(s).encode())
 import importlib
+# serverFolder = '/home/robertocpaes/minecraft-server'
+# yml_editor_module = importlib.import_module("utils.yml_editor")
+# yml_editor = getattr(yml_editor_module, "add_server_bungee")
+# yml_editor(serverFolder, 'teste',25566)
 
-serverFolder = '/home/robertocpaes/minecraft-server'
-yml_editor_module = importlib.import_module("utils.yml_editor")
-yml_editor = getattr(yml_editor_module, "add_server_bungee")
-yml_editor(serverFolder, 'teste',25566)
+
+from model.command import Command
+from model.register_command import RegisterCommand
+
+registerCommand = RegisterCommand()
+
+commandum = Command('create', 5, registerCommand.addCommand)
+commanddois = Command('stop', 1,  registerCommand.addCommand)
+commandtres = Command('restart', 1, registerCommand.addCommand)
+
+
+for obj in registerCommand.getCommands():
+    print( obj.command, obj.limit, sep =' ' )

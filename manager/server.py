@@ -7,9 +7,8 @@ import importlib
 from pathlib import Path
 import ruamel.yaml
 import sys
-
 from _thread import *
-
+from model.command import Command
 dockerClient = docker.from_env()
 ServerSocket = socket.socket()
 serverFolder = '/home/robertocpaes/minecraft-server'
@@ -82,5 +81,5 @@ def threaded_client(connection,address):
 while True:
     Client, address = ServerSocket.accept()
     print('Connected to: ' + address[0] + ':' + str(address[1]))
-    start_new_thread(threaded_client, (Client,address))
+    start_new_thread(threaded_client, (Client, address))
 ServerSocket.close()
