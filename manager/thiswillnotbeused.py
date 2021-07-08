@@ -25,13 +25,20 @@ import importlib
 
 from model.command import Command
 from model.register_command import RegisterCommand
+from model.command_handler import CommandHandler
 
+def createTest():
+    print('teste de função customizada.')
+
+
+commandReceived = ['create', 'servername', '25565', 'forge', '1.16.5', '13.2.6'] #trying to simulate a command.
 registerCommand = RegisterCommand()
-
-commandum = Command('create', 5, registerCommand.addCommand)
-commanddois = Command('stop', 1,  registerCommand.addCommand)
-commandtres = Command('restart', 1, registerCommand.addCommand)
-
+commandum = Command('create', 5, createTest, registerCommand.addCommand)
+commanddois = Command('stop', 1, False,  registerCommand.addCommand)
+commandtres = Command('restart', 1,False, registerCommand.addCommand)
+commandHandler = CommandHandler()
+commandHandler.checkCommand(commandReceived,
+                            registerCommand.getCommands)
 
 for obj in registerCommand.getCommands():
     print( obj.command, obj.limit, sep =' ' )

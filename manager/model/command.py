@@ -1,7 +1,10 @@
 class Command:
-    def __init__(self, command, limit, register = False):
+    def __init__(self, command, max_arg, min_arg=0, method=False, register=False):
         self.command = command
-        self.limit = limit
+        self.method = method
+        self.max_arg = max_arg
+        self.min_arg = min_arg
         register(self)
     def execute(self):
-        print('executando...' + self.command)
+        if self.method is not False:
+            self.method()
