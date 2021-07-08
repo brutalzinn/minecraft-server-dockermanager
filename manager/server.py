@@ -9,6 +9,8 @@ import ruamel.yaml
 import sys
 from _thread import *
 from model.command import Command
+from model.register_command import RegisterCommand
+from model.command_handler import CommandHandler
 dockerClient = docker.from_env()
 ServerSocket = socket.socket()
 serverFolder = '/home/robertocpaes/minecraft-server'
@@ -55,6 +57,8 @@ def threaded_client(connection,address):
         dataReceived = data.split(' ')
         command = dataReceived[0].rstrip()
         response = {}
+        registerCommand = RegisterCommand()
+
         if command == 'create-bungee':
             dockerModule = importlib.import_module("dockerManager")
             bungee = getattr(dockerModule, "setup_bungee")

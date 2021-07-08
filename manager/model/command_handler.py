@@ -4,4 +4,8 @@ class CommandHandler:
     def checkCommand(self, command,getCommands):
         for obj in getCommands():
             if obj.command == command[0]:
-                obj.execute()
+                if len(command) > obj.min_arg:
+                    return obj.execute()
+                else:
+                    print('argumntos inválidos.')
+                    return False

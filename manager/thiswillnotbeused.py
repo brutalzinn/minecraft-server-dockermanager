@@ -28,17 +28,23 @@ from model.register_command import RegisterCommand
 from model.command_handler import CommandHandler
 
 def createTest():
-    print('teste de função customizada.')
+    print('teste de função create.')
+    return 'create suceffull'
+def stopTest():
+    print('teste de função stop.')
+    return 'stop suceffull'
 
-
+# commandTester = [['create', 'servername', '25565', 'forge', '1.16.5', '13.2.6'],['stop', 'containername']]
 commandReceived = ['create', 'servername', '25565', 'forge', '1.16.5', '13.2.6'] #trying to simulate a command.
+# commandReceived = ['stop', 'containername']
 registerCommand = RegisterCommand()
-commandum = Command('create', 5, createTest, registerCommand.addCommand)
-commanddois = Command('stop', 1, False,  registerCommand.addCommand)
-commandtres = Command('restart', 1,False, registerCommand.addCommand)
+commandum = Command('create', 6, 5, createTest, registerCommand.addCommand)
+commanddois = Command('stop', 1, 0, stopTest, registerCommand.addCommand)
+commandtres = Command('restart', 1, 0, False, registerCommand.addCommand)
 commandHandler = CommandHandler()
-commandHandler.checkCommand(commandReceived,
-                            registerCommand.getCommands)
 
+# for item in commandTester:
+response = commandHandler.checkCommand(commandReceived, registerCommand.getCommands)
+print(response)
 for obj in registerCommand.getCommands():
-    print( obj.command, obj.limit, sep =' ' )
+    print( obj.command, obj.max_arg, obj.min_arg, sep =' ' )
