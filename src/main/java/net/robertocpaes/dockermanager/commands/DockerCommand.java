@@ -78,16 +78,19 @@ public class DockerCommand extends Command {
         if (sender instanceof ProxiedPlayer){
             ProxiedPlayer player = (ProxiedPlayer) sender;
             plugin.config.reload();
-           // String ipAddress = plugin.config.get().getString("ip");
+
+             String ipAddress = plugin.config.get().getString("ip");
             StringBuffer command = new StringBuffer();
             if (args.length == 0 ) {
                 player.sendMessage(new TextComponent(ChatColor.GOLD + System.getenv("CFG_HOST")));
+                player.sendMessage(new TextComponent(ChatColor.GREEN + ipAddress));
+
                 player.sendMessage(new TextComponent(ChatColor.RED + "É obrigatório enviar um param."));
                 return;
             }
-                for(int i = 0; i < args.length; i++) {
-                    command.append(args[i] + " ");
-                }
+            for(int i = 0; i < args.length; i++) {
+                command.append(args[i] + " ");
+            }
             command.deleteCharAt(command.length()-1);
             String commandSender = command.toString();
             plugin.getLogger().info("Command to send " + commandSender);
@@ -95,9 +98,14 @@ public class DockerCommand extends Command {
             new Thread(() -> {
                 try{
                     socketClient client = socketClient.getInstance();
+                    plugin.getLogger().info("Thread started ");
 
                     client.startConnection(System.getenv("CFG_HOST"), 5000);
+                    plugin.getLogger().info("Connection worked.");
+
                     String response = client.sendMessage(commandSender);
+                    plugin.getLogger().info(response);
+
                     if(isJSONArray(response)){
                         System.out.print("This is a data array from python ");
                         JsonParser parser = new JsonParser();
@@ -119,6 +127,7 @@ public class DockerCommand extends Command {
                             player.sendMessage(new TextComponent(colorChangeMessageStatus(obj.getAsJsonObject("status").getAsBoolean(),obj.getAsJsonObject("data").getAsString())));
                         }catch (com.google.gson.JsonSyntaxException e){
                             e.printStackTrace();
+                            plugin.getLogger().info("Error" + e);
 
                         }
                         System.out.print("A simple json object. " + response);
@@ -126,19 +135,21 @@ public class DockerCommand extends Command {
                     System.out.print("Python response " + response);
 
                 } catch (IOException errore) {
-                    System.out.print("ERRO:"+errore);
+                    plugin.getLogger().info("Error" + errore);
                     try {
                         socketClient client = socketClient.getInstance();
 
                         client.stopConnection();
                     } catch (IOException ioException) {
+                        plugin.getLogger().info("Error" + ioException);
+
                         ioException.printStackTrace();
                     }
 
                 }
 
             }).start();
-          //      player.sendMessage(new TextComponent(ChatColor.RED + "You are already in the lobby."));
+            //      player.sendMessage(new TextComponent(ChatColor.RED + "You are already in the lobby."));
 
         }
     }

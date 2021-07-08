@@ -9,6 +9,7 @@ def create_container(path, servername, port,environment):
     try:
         dockerClient.containers.run(image="itzg/minecraft-server:java11", name=servername, ports={f'{port}/tcp': port},
                                     network='bungee',
+                                    labels={"tipo":"minecraft"},
                                      environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
                                     detach=True)
         return True
@@ -20,13 +21,11 @@ def setup_docker():
 def setup_bungee(serverdirectory):
     try:
          #       environment = {"TYPE":"WATERFALL","REPLACE_ENV_VARIABLES":"TRUE","ENV_VARIABLE_PREFIX":"CFG_","CFG_HOST":"$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')"},
-
-     #   dockerClient.networks.create("bungee")
+        dockerClient.networks.create("bungee", driver="bridge")
         dockerClient.images.pull("itzg/bungeecord")
-        output = subprocess.run(["bash ./setup.sh"], shell=True,universal_newlines = True,
+        output = subprocess.run(["bash ./setup.sh"], shell=True, universal_newlines = True,
         stdout = subprocess.PIPE)
-       # print(output.stdout.strip())
-        environment = {"TYPE": "WATERFALL", "CFG_HOST": output.stdout.strip()}
+        environment = {"CFG_HOST": output.stdout.strip()}
 
         dockerClient.containers.run(image="itzg/bungeecord", name='bungeecord', ports={'25577/tcp': 25577},
         network='bungee',
@@ -81,7 +80,7 @@ def stop_container(servername):
 
 def list_container():
     list = []
-    containerList = dockerClient.containers.list(all=True, filters={"ancestor": ["itzg/minecraft-server:java11"]})
+    containerList = dockerClient.containers.list(all=True, filters={"label": "tipo=minecraft"})
     for item in containerList:
         containerInfo = dockerClient.containers.get(item.id)
         ports = containerInfo.attrs['HostConfig']['PortBindings'].items()
@@ -89,4 +88,5 @@ def list_container():
         for key, value in ports:
             finalPort = value[0]['HostPort']
         list.append({'name': item.name, 'status': item.status, 'port': f"{finalPort}"})
+    print(list)
     return list
