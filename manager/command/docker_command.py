@@ -39,52 +39,55 @@ def docker_command(serverFolder, registerCommand):
                     return {'status':False,'data':f'{serverName} create with error. Check server container manager'}
             else:
                return {'status':False,'data':f'{serverName} You need inform a port.'}
-    #     elif command == 'restart':
-    #         serverName = dataReceived[1].rstrip()
-    #         dockerModule = importlib.import_module("dockerManager")
-    #         restart = getattr(dockerModule, "restart_container")
-    #         if restart(serverName):
-    #             return {'status':True,'data':f'{serverName} restarted successful'}
-    #         else:
-    #             return {'status':False,'data':f'{serverName} restarted with error. Check server container manager'}
-    #
-    #     elif command == 'stop':
-    #         serverName = dataReceived[1].rstrip()
-    #         dockerModule = importlib.import_module("dockerManager")
-    #         stop = getattr(dockerModule, "stop_container")
-    #         if stop(serverName):
-    #             return {'status':True,'data':f'{serverName} successfully stopped'}
-    #         else:
-    #            return {'status':False,'data':f'{serverName} stopped with error. Check server container manager'}
-    #     elif command == 'start':
-    #         serverName = dataReceived[1].rstrip()
-    #         dockerModule = importlib.import_module("dockerManager")
-    #         start = getattr(dockerModule, "start_container")
-    #         if start(serverName):
-    #            return {'status':True,'data':f'{serverName} successfully started'}
-    #         else:
-    #             return  {'status':False,'data':f'{serverName} started with error. Check server container manager'}
-    #     elif command == 'remove':
-    #         serverName = dataReceived[1].rstrip()
-    #         directoryName = os.path.join(serverFolder, serverName)
-    #         dockerModule = importlib.import_module("dockerManager")
-    #         remove = getattr(dockerModule, "remove_container")
-    #         try:
-    #             if remove(serverName):
-    #                 for root, dirs, files in os.walk(directoryName, topdown=False):
-    #                     for name in files:
-    #                         os.remove(os.path.join(root, name))
-    #                     for name in dirs:
-    #                         os.rmdir(os.path.join(root, name))
-    #                 os.rmdir(directoryName)
-    #                 yml_editor_module = importlib.import_module("utils.yml_editor")
-    #                 yml_editor = getattr(yml_editor_module, "remove_server_bungee")
-    #                 yml_editor(serverFolder, serverName)
-    #                 return {'status':True,'data':f'{serverName} successfully remove'}
-    #             else:
-    #                 return {'status':False,'data':f'{serverName} removed with error. Check server container manager'}
-    #         except Exception as error:
-    #             return {'status':False,'data':f'{serverName} '+ str(error)}
-    # else:
-    #     return {'status':False,'data':'cant execute this command'}
+    def restart(dataReceived):
+            serverName = dataReceived[1].rstrip()
+            dockerModule = importlib.import_module("dockerManager")
+            restart = getattr(dockerModule, "restart_container")
+            if restart(serverName):
+                return {'status':True,'data':f'{serverName} restarted successful'}
+            else:
+                return {'status':False,'data':f'{serverName} restarted with error. Check server container manager'}
+
+    def stop(dataReceived):
+            serverName = dataReceived[1].rstrip()
+            dockerModule = importlib.import_module("dockerManager")
+            stop = getattr(dockerModule, "stop_container")
+            if stop(serverName):
+                return {'status':True,'data':f'{serverName} successfully stopped'}
+            else:
+               return {'status':False,'data':f'{serverName} stopped with error. Check server container manager'}
+    def start(dataReceived):
+            serverName = dataReceived[1].rstrip()
+            dockerModule = importlib.import_module("dockerManager")
+            start = getattr(dockerModule, "start_container")
+            if start(serverName):
+               return {'status':True,'data':f'{serverName} successfully started'}
+            else:
+                return  {'status':False,'data':f'{serverName} started with error. Check server container manager'}
+    def remove(dataReceived):
+            serverName = dataReceived[1].rstrip()
+            directoryName = os.path.join(serverFolder, serverName)
+            dockerModule = importlib.import_module("dockerManager")
+            remove = getattr(dockerModule, "remove_container")
+            try:
+                if remove(serverName):
+                    for root, dirs, files in os.walk(directoryName, topdown=False):
+                        for name in files:
+                            os.remove(os.path.join(root, name))
+                        for name in dirs:
+                            os.rmdir(os.path.join(root, name))
+                    os.rmdir(directoryName)
+                    yml_editor_module = importlib.import_module("utils.yml_editor")
+                    yml_editor = getattr(yml_editor_module, "remove_server_bungee")
+                    yml_editor(serverFolder, serverName)
+                    return {'status':True,'data':f'{serverName} successfully remove'}
+                else:
+                    return {'status':False,'data':f'{serverName} removed with error. Check server container manager'}
+            except Exception as error:
+                return {'status':False,'data':f'{serverName} '+ str(error)}
+
     Command('create', 6, 4, create_command, registerCommand.addCommand)
+    Command('stop', 1, 1, stop, registerCommand.addCommand)
+    Command('restart', 1, 1, restart, registerCommand.addCommand)
+    Command('start', 1, 1, start, registerCommand.addCommand)
+    Command('remove', 1, 1, remove, registerCommand.addCommand)
