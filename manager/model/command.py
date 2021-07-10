@@ -5,6 +5,10 @@ class Command:
         self.max_arg = max_arg
         self.min_arg = min_arg
         register(self)
+
     def execute(self, command):
         if self.method is not False:
-            return self.method(command)
+            if len(command) >= self.min_arg and len(command) <= self.max_arg:
+                return self.method(command)
+        else:
+            return False
