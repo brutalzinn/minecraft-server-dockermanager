@@ -1,6 +1,9 @@
 from sys import flags
 import docker
 import subprocess
+
+from docker.errors import APIError
+
 from manager.error_handle import error_response
 dockerClient = docker.from_env()
 # environment = {"EULA": "TRUE", "TYPE": "FORGE", "VERSION": "1.16.5", "FORGEVERSION": "36.1.32", "ONLINE_MODE": "FALSE"}
@@ -66,6 +69,7 @@ def start_container(servername):
         dockerClient.api.start(servername)
         return error_response(True)
     except Exception as err:
+        print(err)
         return error_response(False, str(err))
 
 
@@ -75,6 +79,7 @@ def stop_container(servername):
         dockerClient.api.stop(servername)
         return error_response(True)
     except Exception as err:
+        print(err)
         return error_response(False, str(err))
 
 
