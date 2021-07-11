@@ -1,6 +1,7 @@
 from sys import flags
 import docker
 import subprocess
+from manager.error_handle import error_response
 dockerClient = docker.from_env()
 # environment = {"EULA": "TRUE", "TYPE": "FORGE", "VERSION": "1.16.5", "FORGEVERSION": "36.1.32", "ONLINE_MODE": "FALSE"}
 
@@ -10,17 +11,15 @@ def create_container(path, servername, port,environment):
         dockerClient.containers.run(image="itzg/minecraft-server:java11", name=servername, ports={f'{port}/tcp': port},
                                     network='bungee',
                                     labels={"tipo":"minecraft"},
-                                     environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
+                                    environment=environment, volumes={path: {'bind': '/data', 'mode': 'rw'}},
                                     detach=True)
-        return True
+        return error_response(True)
     except Exception as err:
-        print(err)
-        return False
+        return error_response(False, str(err))
 def setup_docker():
     dockerClient.images.pull("itzg/minecraft-server")
 def setup_bungee(serverdirectory):
     try:
-         #       environment = {"TYPE":"WATERFALL","REPLACE_ENV_VARIABLES":"TRUE","ENV_VARIABLE_PREFIX":"CFG_","CFG_HOST":"$(ip route get 1 | sed -n 's/^.*src \([0-9.]*\) .*$/\1/p')"},
         dockerClient.networks.create("bungee", driver="bridge")
         dockerClient.images.pull("itzg/bungeecord")
         output = subprocess.run(["bash ./setup.sh"], shell=True, universal_newlines = True,
@@ -32,50 +31,52 @@ def setup_bungee(serverdirectory):
         environment=environment,
         volumes={serverdirectory: {'bind': '/server', 'mode': 'rw'}},
         detach=True)
-        return True
+        return error_response(True)
     except Exception as err:
-        print(err)
-        return False
+        return error_response(False, str(err))
 def remove_bungee():
     try:
         dockerClient.api.stop('bungeecord')
         dockerClient.api.remove_container('bungeecord')
         dockerClient.images.remove("itzg/bungeecord")
-        dockerClient
-        return True
-    except:
-        return False
+
+        return error_response(True)
+    except Exception as err:
+        return error_response(False, str(err))
 def remove_container(servername):
     try:
         dockerClient.api.stop(servername)
         dockerClient.api.remove_container(servername)
-        return True
-    except:
-        return False
+        return error_response(True)
+    except Exception as err:
+        return error_response(False, str(err))
+
 
 
 def restart_container(servername):
     try:
         dockerClient.api.restart(servername)
-        return True
-    except:
-        return False
+        return error_response(True)
+    except Exception as err:
+        return error_response(False, str(err))
 
 
 def start_container(servername):
     try:
         dockerClient.api.start(servername)
-        return True
-    except:
-        return False
+        return error_response(True)
+    except Exception as err:
+        return error_response(False, str(err))
+
 
 
 def stop_container(servername):
     try:
         dockerClient.api.stop(servername)
-        return True
-    except:
-        return False
+        return error_response(True)
+    except Exception as err:
+        return error_response(False, str(err))
+
 
 
 def list_container():

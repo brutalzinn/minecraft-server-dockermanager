@@ -8,14 +8,14 @@ def docker_command(serverFolder, registerCommand):
             serverName = dataReceived[1].rstrip()
             version = ''
             forgeversion = ''
-            type = ''
+            typeServer = ''
             if len(dataReceived) > 2:
                 port = dataReceived[2].rstrip()
                 enviroment = {"EULA": "TRUE", "ONLINE_MODE": "FALSE", "SERVER_PORT": port}
 
                 if len(dataReceived) > 3:
-                    type = dataReceived[3].rstrip()
-                    enviroment['TYPE'] = type.upper()
+                    typeServer = dataReceived[3].rstrip()
+                    enviroment['TYPE'] = typeServer.upper()
 
                 if len(dataReceived) > 4:
                     version = dataReceived[4].rstrip()
@@ -26,40 +26,44 @@ def docker_command(serverFolder, registerCommand):
                 print(enviroment)
                 directoryName = os.path.join(serverFolder, serverName)
                 Path(directoryName).mkdir(parents=True, exist_ok=True)
-                if create_container(directoryName,serverName,int(port),enviroment):
+                result = create_container(directoryName, serverName, int(port), enviroment)
+                if result["status"]:
                     yml_editor_module = importlib.import_module("utils.yml_editor")
                     yml_editor = getattr(yml_editor_module, "add_server_bungee")
                     yml_editor(serverFolder, serverName, port)
                     return {'status':True,'data':f'{serverName} created successful'}
                 else:
-                    return {'status':False,'data':f'{serverName} create with error. Check server container manager'}
+                    return {'status':False,'data':f'{serverName} create with error. {result["data"]}'}
             else:
                return {'status':False,'data':f'{serverName} You need inform a port.'}
     def restart(dataReceived):
             serverName = dataReceived[1].rstrip()
-            if restart_container(serverName):
+            result = restart_container(serverName)
+            if result["status"]:
                 return {'status':True,'data':f'{serverName} restarted successful'}
             else:
-                return {'status':False,'data':f'{serverName} restarted with error. Check server container manager'}
+                return {'status':False,'data':f'{serverName} restarted with error. {result["data"]}'}
 
     def stop(dataReceived):
             serverName = dataReceived[1].rstrip()
-            if stop_container(serverName):
+            result = stop_container(serverName)
+            if result["status"]:
                 return {'status':True,'data':f'{serverName} successfully stopped'}
             else:
-               return {'status':False,'data':f'{serverName} stopped with error. Check server container manager'}
+               return {'status':False,'data':f'{serverName} stopped with error. {result["data"]}'}
     def start(dataReceived):
             serverName = dataReceived[1].rstrip()
-            print('start',dataReceived)
-            if start_container(serverName):
+            result = start_container(serverName)
+            if result["status"]:
                 return {'status':True,'data':f'{serverName} successfully started'}
             else:
-                return  {'status':False,'data':f'{serverName} started with error. Check server container manager'}
+                return  {'status':False,'data':f'{serverName} started with error. {result["data"]}'}
     def remove(dataReceived):
             serverName = dataReceived[1].rstrip()
             directoryName = os.path.join(serverFolder, serverName)
+            result = remove_container(serverName)
             try:
-                if remove_container(serverName):
+                if result["status"]:
                     for root, dirs, files in os.walk(directoryName, topdown=False):
                         for name in files:
                             os.remove(os.path.join(root, name))
@@ -71,7 +75,7 @@ def docker_command(serverFolder, registerCommand):
                     yml_editor(serverFolder, serverName)
                     return {'status':True,'data':f'{serverName} successfully remove'}
                 else:
-                    return {'status':False,'data':f'{serverName} removed with error. Check server container manager'}
+                    return {'status':False,'data':f'{serverName} removed with error. {result["data"]}'}
             except Exception as error:
                 return {'status':False,'data':f'{serverName} '+ str(error)}
     def list(dataReceived):
